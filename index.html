@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>GAME GRIZZHACKS 5 (2020) </title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas {
+    		border:1px solid #d3d3d3;
+    		background-color: #f1f1f1;
+    		display: block;
+    		margin: 0 auto;
+		}
+    </style>
+</head>
+
+<body onload="startGame()">
+
+<h1>GAME -Made by Raymen Shu </h1>
+
+<p>I've never made anything in HTML or Javascript so this is the first time I'm making a HTML/JavaScript Game. Made for Grizzhacks5 (9/192020).  </p>
+<canvas id="myCanvas" width="960" height="640"></canvas>
+
+<script>
+	//JavaScript
+	var myCharacter;
+	//var myObstactle;
+	var myObstacles = [];
+	var myScore;
+
+	function startGame() {
+    myCharacter = new component(30, 30, "blue", 500, 600);//new Image();
+    //myCharacter .onload = function() {
+    //	ctx.drawImage(myCharacter, 10, 120);
+    //}
+    //myCharacter.src = 
+    //myObstacle = new component(200, 10, "green", 300, 120);
+    myScore = new component("40px", "Consolas", "black", 420, 50, "text");
+    myGameArea.start();
+	}
+
+var myGameArea = {
+    canvas : myCanvas,
+    start : function() {
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+        window.addEventListener('keydown', function (e) {
+    	  myGameArea.key = e.keyCode;
+    	})
+   		window.addEventListener('keyup', function (e) {
+    	  myGameArea.key = false;
+    	})
+    },
+
+    stop : function() {
+    clearInterval(this.interval);
+  	},
+
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function everyinterval(n) {
+	if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+	return false;
+}
+
+function component(width, height, color, x, y, t) {
+
+    this.width = width;
+    this.height = height;
+    
+    this.speedX = 0;
+  	this.speedY = 0;
+    this.x = x;
+    this.y = y;
+
+    this.t = t;    
+    
+    this.update = function(){
+        ctx = myGameArea.context;
+        //for text/score counter
+        if (this.t == "text") {
+      	ctx.font = this.width + " " + this.height;
+      	ctx.fillStyle = color;
+      	ctx.fillText(this.text, this.x, this.y);
+    	} else {
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    	}
+    }
+    this.newPos = function() {
+    	this.x += this.speedX;
+    	this.y += this.speedY;
+  	}
+  	//borrowed this 
+  	this.collisionWith = function(otherobj) {
+	    var myleft = this.x;
+	    var mytop = this.y;
+	    var myright = this.x + (this.width);
+	    var mybottom = this.y + (this.height);
+	    var otherleft = otherobj.x;
+	    var othertop = otherobj.y;
+	    var otherright = otherobj.x + (otherobj.width);
+	    var otherbottom = otherobj.y + (otherobj.height);
+	    var crash = true;
+	    if ((mybottom < othertop) ||
+	    (mytop > otherbottom) ||
+	    (myright < otherleft) ||
+	    (myleft > otherright)) {
+	      crash = false;
+	    }
+	    return crash;
+	}
+}
+
+function updateGameArea() {
+	var x, y, randomlength;
+	for (i = 0; i < myObstacles.length; i++) {
+		if (myCharacter.collisionWith(myObstacles[i])) {
+	      	myGameArea.stop();
+	      	return;
+	   	}
+	}
+	myGameArea.clear();
+	myGameArea.frameNo += 1;
+	if (myGameArea.frameNo == 1 || everyinterval(30)) {
+	    x = Math.floor(Math.random() * Math.floor(myGameArea.canvas.width - 100)) - 25;
+	    y = 0;
+	    randomlength = Math.floor(Math.random() * Math.floor(400))
+	    myObstacles.push(new component(randomlength + 50, 10, "green", x, y));
+	}
+	for (i = 0; i < myObstacles.length; i++) {
+	    myObstacles[i].y += 7;
+	    myObstacles[i].update();
+	}
+	//if (myCharacter.collisionWith(myObstacle)) {
+    //myGameArea.stop();
+	//} else {
+    //myGameArea.clear();
+    //myObstacle.y += 5;
+    myCharacter.speedX = 0;
+  	myCharacter.speedY = 0;
+  	if (myGameArea.key && myGameArea.key == 37) {myCharacter.speedX = -10; }
+  	if (myGameArea.key && myGameArea.key == 39) {myCharacter.speedX = 10; }
+  	//if (myGameArea.key && myGameArea.key == 38) {myCharacter.speedY = -10; }
+  	//if (myGameArea.key && myGameArea.key == 40) {myCharacter.speedY = 10; }
+    //myCharacter.x += //direction to head;
+    //myObstacle.update();
+    myScore.text = "SCORE: " + myGameArea.frameNo;
+  	myScore.update();
+    myCharacter.newPos();
+    myCharacter.update();
+	//}
+}
+
+function stopMove() {
+  myCharacter.speedX = 0;
+  myCharacter.speedY = 0;
+}
+
+</script>
+
+<br>
+
+<p> Afterword: completed in about 8 hrs </p>
+
+</body>
+</html>
